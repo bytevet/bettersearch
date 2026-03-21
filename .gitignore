@@ -1,0 +1,23 @@
+node_modules/
+dist/
+
+# Test results
+test-results/
+playwright-report/
+
+# Editor
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Claude Code
+.claude/

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BetterSearch Test Page</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; color: #333; }
+    h1 { color: #1a1a2e; }
+    h2 { color: #16213e; margin-top: 2rem; }
+    p { margin: 1rem 0; }
+    code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+    .highlight { background: #fff3cd; padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #888; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <h1>BetterSearch Extension Test Page</h1>
+  <p>Use this page to test the BetterSearch Chrome extension. Press <code>Alt+F</code> or click the toolbar icon to open the search side panel.</p>
+
+  <div class="highlight">
+    <strong>Quick test:</strong> Try searching for "TypeScript", "architecture", "indexing", or "fuzzy" to see ranked results with highlighted matches.
+  </div>
+
+  <h2>About BetterSearch</h2>
+  <p>BetterSearch is a Chrome extension that replaces the browser's basic Cmd+F with a full-text search experience. It indexes the current page, ranks results by relevance using TF-IDF scoring, and lets users click through to highlighted matches.</p>
+
+  <h2>Architecture Overview</h2>
+  <p>The extension runs across four execution contexts defined by Manifest V3. The <strong>service worker</strong> handles command registration and side panel lifecycle. The <strong>content script</strong> performs DOM extraction, text indexing, and match highlighting directly on the page. The <strong>side panel</strong> provides a React-based search UI with components built on shadcn/ui and Tailwind CSS. Finally, the <strong>shared module</strong> contains type definitions and messaging helpers used by all other contexts.</p>
+
+  <h2>How Indexing Works</h2>
+  <p>When the side panel opens, it sends an INDEX_PAGE message to the content script. The content script traverses the DOM using depth-first search, extracting visible text segments from the page. Each segment records its text content, an XPath for locating the element, and a weak reference to the DOM node.</p>
+  <p>The extracted segments are fed into MiniSearch, a lightweight full-text search library that supports fuzzy matching, prefix search, and TF-IDF relevance scoring. Indexing happens in batches of 50 segments with progress updates sent back to the side panel via port-based messaging.</p>
+  <p>Once built, the index is serialized and cached in IndexedDB. On subsequent visits to the same page, the content hash is compared to detect changes. If the page content hasn't changed, the cached index is loaded instantly without re-traversing the DOM.</p>
+
+  <h2>Search and Highlighting</h2>
+  <p>When the user types a query, the side panel debounces the input by 150 milliseconds and sends a SEARCH message to the content script. MiniSearch returns results ranked by relevance score. Each result includes a snippet with HTML-escaped text and <code>&lt;mark&gt;</code> tags wrapping matched terms.</p>
+  <p>Clicking a search result sends a HIGHLIGHT message. The content script locates the target element via its XPath or weak reference, then uses a TreeWalker to find matching text nodes. Matched text is wrapped in <code>&lt;mark&gt;</code> elements with a yellow background. The first match receives an active class with a pulse animation and the page scrolls smoothly to bring it into view.</p>
+
+  <h2>TypeScript and the Build System</h2>
+  <p>The entire codebase is written in TypeScript with strict mode enabled. The build system uses Vite with three separate configurations: one for the side panel React app, one for the content script as an IIFE bundle, and one for the service worker as another IIFE bundle. A build orchestration script runs all three builds sequentially and copies the manifest and icon assets into the dist directory.</p>
+
+  <h2>Testing Strategy</h2>
+  <p>Unit tests use Vitest with jsdom for DOM simulation. The extractor tests verify correct text extraction from various DOM structures, including proper handling of hidden elements, script and style tags, and nested block elements. The indexer tests cover search accuracy, fuzzy matching, prefix search, relevance ranking, snippet generation with HTML escaping, and serialization roundtrips. Cache tests verify IndexedDB read and write operations, content hash validation, and URL normalization.</p>
+  <p>Component tests use React Testing Library to verify the SearchBar input behavior, debouncing, result count display, and the ResultsList click handling. End-to-end tests use Playwright with a persistent browser context that loads the extension via the <code>--load-extension</code> flag.</p>
+
+  <h2>Security and Privacy</h2>
+  <p>BetterSearch makes no network requests. All text processing happens locally within the page context. The extension requires only two permissions: <code>activeTab</code> for accessing the current tab's content, and <code>sidePanel</code> for the search UI. A strict Content Security Policy restricts script sources to the extension itself. Cached data in IndexedDB contains only text the user already sees on the page, and entries are automatically cleaned after seven days.</p>
+
+  <h2>SPA Support</h2>
+  <p>For single-page applications that dynamically update their content, BetterSearch installs a MutationObserver on document.body. When significant DOM changes are detected, a debounced timer (2 seconds) triggers the index to be cleared. The next search will rebuild the index from the current page state, ensuring results stay accurate even on highly dynamic pages.</p>
+
+  <footer>
+    <p>BetterSearch v0.1.0 &mdash; Test page for development and debugging.</p>
+  </footer>
+</body>
+</html>
