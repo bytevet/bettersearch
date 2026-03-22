@@ -23,6 +23,7 @@ export const MSG = {
   SEARCH_RESULTS: "SEARCH_RESULTS",
   INDEX_ERROR: "INDEX_ERROR",
   PAGE_INFO: "PAGE_INFO",
+  PING: "PING",
 } as const;
 
 export interface IndexPageMessage {

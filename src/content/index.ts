@@ -8,6 +8,11 @@ import { PORT_NAME, MUTATION_DEBOUNCE_MS } from "@/shared/constants";
 // Flag for service worker to detect if already injected
 (window as any).__bettersearch = true;
 
+// Respond to ping from side panel to confirm content script is ready
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg?.type === MSG.PING) sendResponse({ ok: true });
+});
+
 let currentSegments: TextSegment[] = [];
 let isIndexing = false;
 let abortController: AbortController | null = null;

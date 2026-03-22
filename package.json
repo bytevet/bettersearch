@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx scripts/build.ts && concurrently \"vite build --watch --config vite.config.ts\" \"vite build --watch --config vite.content.config.ts\" \"vite build --watch --config vite.background.config.ts\"",
+    "dev": "tsx scripts/build.ts --watch",
     "build": "tsx scripts/build.ts",
     "test": "vitest run",
     "test:watch": "vitest",

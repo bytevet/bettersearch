@@ -5,7 +5,13 @@ import { useTheme } from "./hooks/useTheme";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import {
+  Progress,
+  ProgressIndicator,
+  ProgressLabel,
+  ProgressTrack,
+  ProgressValue,
+} from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResultItem } from "./components/ResultItem";
 import { StatusBar } from "./components/StatusBar";
@@ -33,7 +39,7 @@ export function App() {
     inputRef.current?.focus();
   }, []);
 
-  const disabled = indexStatus === "indexing";
+  const indexing = indexStatus === "indexing";
 
   return (
     <div className="flex flex-col h-screen">
@@ -52,7 +58,6 @@ export function App() {
                   placeholder="Search this page..."
                   value={query}
                   onChange={(e) => updateQuery(e.target.value)}
-                  disabled={disabled}
                   className="pr-16"
                 />
                 {query && (
@@ -68,19 +73,11 @@ export function App() {
                 variant="ghost"
                 size="icon"
                 onClick={triggerSearch}
-                disabled={disabled}
                 aria-label="Search"
               >
                 <Search />
               </Button>
             </div>
-
-            {disabled && indexProgress < 100 && (
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Indexing... {indexProgress}%</p>
-                <Progress value={indexProgress} />
-              </div>
-            )}
 
             {indexStatus === "error" && (
               <p className="text-sm text-destructive">
@@ -89,7 +86,9 @@ export function App() {
             )}
 
             {indexStatus === "ready" && query && results.length === 0 && (
-              <p className="text-sm text-muted-foreground px-1">No results found.</p>
+              <p className="text-sm text-muted-foreground px-1">
+                No results found.
+              </p>
             )}
 
             {results.length > 0 && (
@@ -110,10 +109,17 @@ export function App() {
         )}
       </div>
 
+      {indexing && (
+        <div className="py-1 px-2 flex items-center gap-2">
+          <div>Indexing</div>
+          <Progress value={indexProgress} className="flex-1" />
+        </div>
+      )}
+
       <StatusBar
         pageUrl={pageUrl}
         lastIndexedAt={lastIndexedAt}
-        indexing={disabled}
+        indexing={indexing}
         onReindex={reindex}
         theme={theme}
         onThemeToggle={cycleTheme}

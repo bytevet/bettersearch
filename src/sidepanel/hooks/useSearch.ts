@@ -21,6 +21,7 @@ export function useSearch() {
   const [lastIndexedAt, setLastIndexedAt] = useState<number | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const retryRef = useRef<ReturnType<typeof setTimeout>>();
+  const queryRef = useRef(query);
 
   const connectToTab = useCallback(async (retriesLeft = MAX_CONNECT_RETRIES) => {
     // Disconnect previous port
@@ -47,6 +48,20 @@ export function useSearch() {
     });
     if (!tab?.id) return;
 
+    // Check if content script is ready before connecting to avoid runtime.lastError
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: MSG.PING });
+    } catch {
+      // Content script not ready — retry
+      if (retriesLeft > 0) {
+        retryRef.current = setTimeout(() => connectToTab(retriesLeft - 1), RETRY_DELAY_MS);
+      } else {
+        setIndexStatus("unsupported");
+        setError(null);
+      }
+      return;
+    }
+
     const port = chrome.tabs.connect(tab.id, { name: PORT_NAME });
     portRef.current = port;
 
@@ -63,6 +78,10 @@ export function useSearch() {
           setIndexStatus("ready");
           setIndexProgress(100);
           setLastIndexedAt(msg.timestamp);
+          // Auto-search if user typed during indexing
+          if (queryRef.current.trim() && portRef.current) {
+            sendSearch(portRef.current, queryRef.current);
+          }
           break;
         case MSG.SEARCH_RESULTS:
           setResults(msg.results);
@@ -77,15 +96,6 @@ export function useSearch() {
     port.onDisconnect.addListener(() => {
       if (portRef.current !== port) return;
       portRef.current = null;
-
-      // Content script may not be loaded yet — retry
-      if (retriesLeft > 0) {
-        retryRef.current = setTimeout(() => connectToTab(retriesLeft - 1), RETRY_DELAY_MS);
-        return;
-      }
-
-      setIndexStatus("unsupported");
-      setError(null);
     });
 
     try {
@@ -124,6 +134,7 @@ export function useSearch() {
 
   const updateQuery = useCallback((newQuery: string) => {
     setQuery(newQuery);
+    queryRef.current = newQuery;
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -163,10 +174,10 @@ export function useSearch() {
 
   const triggerSearch = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (portRef.current && query.trim()) {
-      sendSearch(portRef.current, query);
+    if (portRef.current && queryRef.current.trim()) {
+      sendSearch(portRef.current, queryRef.current);
     }
-  }, [query]);
+  }, []);
 
   return {
     indexStatus,
