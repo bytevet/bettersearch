@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { Search } from "lucide-react";
+import { Search, ShieldAlert } from "lucide-react";
 import { useSearch } from "./hooks/useSearch";
 import { useTheme } from "./hooks/useTheme";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,9 +46,15 @@ export function App() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 flex flex-col p-3 gap-3 overflow-hidden">
         {indexStatus === "unsupported" ? (
-          <p className="text-sm text-muted-foreground px-1">
-            BetterSearch is not available on this page.
-          </p>
+          <div className="flex-1 flex items-center justify-center p-4">
+            <Alert className="max-w-xs">
+              <ShieldAlert />
+              <AlertTitle>Page not supported</AlertTitle>
+              <AlertDescription>
+                This page cannot be indexed due to browser restrictions. Try navigating to a regular web page.
+              </AlertDescription>
+            </Alert>
+          </div>
         ) : (
           <>
             <div className="flex items-center gap-2">
