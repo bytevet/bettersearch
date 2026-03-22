@@ -33,6 +33,22 @@ function openPanel(tabId: number): void {
   ensureContentScript(tabId);
 }
 
+// Context menu: right-click to open BetterSearch
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "bettersearch-open",
+    title: "Search with BetterSearch",
+    contexts: ["page"],
+    documentUrlPatterns: ["http://*/*", "https://*/*"],
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId !== "bettersearch-open") return;
+  if (!tab?.id) return;
+  openPanel(tab.id);
+});
+
 chrome.action.onClicked.addListener((tab) => {
   if (!tab.id) return;
   if (tab.url && !isSupportedUrl(tab.url)) return;

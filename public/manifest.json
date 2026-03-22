@@ -3,7 +3,7 @@
   "name": "BetterSearch",
   "version": "0.1.0",
   "description": "Instantly search, find, and highlight any text on the current page with fuzzy full-text search.",
-  "permissions": ["activeTab", "sidePanel", "scripting"],
+  "permissions": ["activeTab", "sidePanel", "scripting", "contextMenus"],
   "action": {
     "default_title": "BetterSearch",
     "default_icon": {
