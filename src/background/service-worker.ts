@@ -1,3 +1,5 @@
+import { isSupportedUrl } from "@/shared/constants";
+
 // Disable side panel globally — only enable per-tab when user clicks the action
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 chrome.sidePanel.setOptions({ enabled: false });
@@ -33,12 +35,14 @@ function openPanel(tabId: number): void {
 
 chrome.action.onClicked.addListener((tab) => {
   if (!tab.id) return;
+  if (tab.url && !isSupportedUrl(tab.url)) return;
   openPanel(tab.id);
 });
 
 chrome.commands.onCommand.addListener((command, tab) => {
   if (command !== "_execute_action" && command !== "toggle-search") return;
   if (!tab?.id) return;
+  if (tab.url && !isSupportedUrl(tab.url)) return;
   openPanel(tab.id);
 });
 

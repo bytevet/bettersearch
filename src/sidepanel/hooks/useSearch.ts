@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { SearchResult } from "@/shared/types";
 import { MSG } from "@/shared/types";
-import { PORT_NAME, SEARCH_DEBOUNCE_MS } from "@/shared/constants";
+import { PORT_NAME, SEARCH_DEBOUNCE_MS, isSupportedUrl } from "@/shared/constants";
 import { sendIndexPage, sendSearch, sendHighlight, sendClearHighlights } from "@/shared/messages";
 
 export type IndexStatus = "idle" | "indexing" | "ready" | "error" | "unsupported";
@@ -47,6 +47,13 @@ export function useSearch() {
       currentWindow: true,
     });
     if (!tab?.id) return;
+
+    // Fast path: detect restricted pages by URL scheme (activeTab provides tab.url)
+    if (tab.url && !isSupportedUrl(tab.url)) {
+      setIndexStatus("unsupported");
+      setError(null);
+      return;
+    }
 
     // Check if content script is ready before connecting to avoid runtime.lastError
     try {
