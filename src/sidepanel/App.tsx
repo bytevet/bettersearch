@@ -49,9 +49,9 @@ export function App() {
           <div className="flex-1 flex items-center justify-center p-4">
             <Alert className="max-w-xs">
               <ShieldAlert />
-              <AlertTitle>Page not supported</AlertTitle>
+              <AlertTitle>Can't search this page</AlertTitle>
               <AlertDescription>
-                This page cannot be indexed due to browser restrictions. Try navigating to a regular web page.
+                Browser-internal pages can't be accessed by extensions. Navigate to a website to start searching.
               </AlertDescription>
             </Alert>
           </div>
@@ -62,7 +62,7 @@ export function App() {
                 <Input
                   ref={inputRef}
                   type="text"
-                  placeholder="Search this page..."
+                  placeholder="Find on page..."
                   value={query}
                   onChange={(e) => updateQuery(e.target.value)}
                   className="pr-16"
@@ -88,13 +88,13 @@ export function App() {
 
             {indexStatus === "error" && (
               <p className="text-sm text-destructive">
-                Indexing failed: {error ?? "Unknown error"}
+                Something went wrong: {error ?? "Unable to index this page"}
               </p>
             )}
 
             {indexStatus === "ready" && query && results.length === 0 && (
               <p className="text-sm text-muted-foreground px-1">
-                No results found.
+                No matches on this page.
               </p>
             )}
 
@@ -118,7 +118,7 @@ export function App() {
 
       {indexing && (
         <div className="py-1 px-2 flex items-center gap-2">
-          <div>Indexing</div>
+          <div className="text-xs text-muted-foreground shrink-0">Indexing</div>
           <Progress value={indexProgress} className="flex-1" />
         </div>
       )}

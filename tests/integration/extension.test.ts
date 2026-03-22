@@ -59,7 +59,7 @@ test("extension loads and indexes a page", async () => {
   );
 
   // Verify the side panel loaded - use locator API
-  const searchInput = sidePanelPage.locator('input[placeholder="Search this page..."]');
+  const searchInput = sidePanelPage.locator('input[placeholder="Find on page..."]');
   await expect(searchInput).toBeVisible();
 
   await sidePanelPage.close();
@@ -81,7 +81,7 @@ test("results list is scrollable with many results", async () => {
   await page.setViewportSize({ width: 400, height: 500 });
 
   // Wait for the app to mount
-  const searchInput = page.locator('input[placeholder="Search this page..."]');
+  const searchInput = page.locator('input[placeholder="Find on page..."]');
   await expect(searchInput).toBeVisible();
 
   // Inject many result buttons into the scroll area to simulate a long results list.
@@ -224,7 +224,7 @@ test("side panel UI renders correctly", async () => {
   await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
 
   // Search input should be present
-  const searchInput = page.locator('input[placeholder="Search this page..."]');
+  const searchInput = page.locator('input[placeholder="Find on page..."]');
   await expect(searchInput).toBeVisible();
 
   // Search button should be present
@@ -241,7 +241,7 @@ test("side panel UI renders correctly", async () => {
 
   // Tooltips should appear on hover
   await reindexButton.hover();
-  const reindexTooltip = page.getByText("Re-index page");
+  const reindexTooltip = page.getByText("Rebuild index");
   await expect(reindexTooltip).toBeVisible({ timeout: 3000 });
 
   await themeToggle.hover();

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "BetterSearch",
   "version": "0.1.0",
-  "description": "Full-text search for any web page — like a search engine for the current tab.",
+  "description": "Instantly search, find, and highlight any text on the current page with fuzzy full-text search.",
   "permissions": ["activeTab", "sidePanel", "scripting"],
   "action": {
     "default_title": "BetterSearch",
@@ -31,7 +31,7 @@
       "suggested_key": {
         "default": "Alt+F"
       },
-      "description": "Toggle BetterSearch side panel"
+      "description": "Open or close BetterSearch"
     }
   },
   "icons": {

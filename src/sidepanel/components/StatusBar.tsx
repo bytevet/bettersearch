@@ -69,7 +69,7 @@ export function StatusBar({
             <RefreshCw className={indexing ? "animate-spin" : ""} />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Re-index page</TooltipContent>
+        <TooltipContent>Rebuild index</TooltipContent>
       </Tooltip>
 
       <Tooltip>
