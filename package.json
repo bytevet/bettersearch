@@ -8,7 +8,8 @@
     "build": "tsx scripts/build.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "package": "npm run build && cd dist && zip -r ../bettersearch.zip ."
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

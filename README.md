@@ -49,6 +49,7 @@ Download the latest `bettersearch.zip` from [Releases](https://github.com/byteve
 npm run dev       # Build + watch mode
 npm test          # Run unit & component tests
 npm run test:e2e  # Run Playwright end-to-end tests
+npm run package   # Build + zip for Chrome Web Store
 ```
 
 ### Project structure

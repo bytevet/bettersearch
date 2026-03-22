@@ -19,5 +19,8 @@ Thumbs.db
 .env
 .env.*
 
+# Package output
+*.zip
+
 # Claude Code
 .claude/
